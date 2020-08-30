@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "AWS lambda deploy github action",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "aws-sdk": "^2.742.0",
+    "@actions/core": "^1.2.5"
+  },
   "devDependencies": {},
   "scripts": {},
   "repository": {
