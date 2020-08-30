@@ -15,6 +15,26 @@ Github Action to update a Lambda function from a ZIP file.
 - `MEMORY_SIZE`
 - `INVIRONMENT`
 
+## Required permisions for the access key
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "iam:ListRoles",
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
 ## Example
 
 ```
