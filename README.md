@@ -13,7 +13,7 @@ Github Action to update a Lambda function from a ZIP file.
 - `DESCRIPTION`
 - `TIMEOUT`
 - `MEMORY_SIZE`
-- `INVIRONMENT`
+- `ENVIRONMENT`
 
 ## Required permisions for the access key
 
@@ -65,6 +65,5 @@ jobs:
           DESCRIPTION: 'Test function description'
           MEMORY_SIZE: '128'
           TIMEOUT: '5'
-
-
+          ENVIRONMENT: '{"VAR_NAME":"VAR_VALUE"}'
 ```
