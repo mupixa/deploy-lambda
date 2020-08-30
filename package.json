@@ -1,0 +1,19 @@
+{
+  "name": "deploy-lambda",
+  "version": "0.0.1",
+  "description": "AWS lambda deploy github action",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mupixa/deploy-lambda.git"
+  },
+  "author": "Vladimir Daskalov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mupixa/deploy-lambda/issues"
+  },
+  "homepage": "https://github.com/mupixa/deploy-lambda#readme"
+}

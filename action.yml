@@ -1,0 +1,46 @@
+name: "Deploy AWS Lambda function"
+description: "Update a Lambda function from a ZIP file"
+author: "Vladimir Daskalov"
+branding:
+  icon: "zap"
+  color: "purple"
+inputs:
+  ZIP:
+    description: "Zip package of the complete Lambda source and dependencies."
+    default: ""
+  FUNCTION_NAME:
+    description: "Name of the Lambda function"
+    default: ""
+  AWS_SECRET_KEY:
+    description: "AWS secret key"
+    default: ""
+  AWS_SECRET_ID:
+    description: "AWS secret key ID"
+    default: ""
+  AWS_REGION:
+    description: "AWS region of the Lambda"
+    default: ""
+  RUNTIME:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  ROLE:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  HANDLER:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  TIMEOUT:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  MEMORY_SIZE:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  ENVIRONMENT:
+    description: "Optional Lambda configuration property"
+    default: "null"
+  DESCRIPTION:
+    description: "Optional Lambda configuration property"
+    default: "null"
+runs:
+  using: "node12"
+  main: "index.js"
