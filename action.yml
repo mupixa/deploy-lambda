@@ -1,4 +1,4 @@
-name: "Deploy AWS Lambda function"
+name: "Update source and configuration of AWS Lambda function"
 description: "Update a Lambda function from a ZIP file"
 author: "Vladimir Daskalov"
 branding:
