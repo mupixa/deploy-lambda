@@ -22,25 +22,25 @@ inputs:
     default: ""
   RUNTIME:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   ROLE:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   HANDLER:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   TIMEOUT:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   MEMORY_SIZE:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   ENVIRONMENT:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
   DESCRIPTION:
     description: "Optional Lambda configuration property"
-    default: "null"
+    default: ""
 runs:
   using: "node12"
   main: "index.js"
