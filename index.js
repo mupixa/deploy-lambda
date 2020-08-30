@@ -79,10 +79,10 @@ try {
     configParams["Description"] = DESCRIPTION;
   }
   if (!!TIMEOUT) {
-    configParams["Timeout"] = TIMEOUT;
+    configParams["Timeout"] = Number(TIMEOUT);
   }
   if (!!MEMORY_SIZE) {
-    configParams["MemorySize"] = MEMORY_SIZE;
+    configParams["MemorySize"] = Number(MEMORY_SIZE);
   }
   if (!!ENVIRONMENT) {
     const Variables = JSON.parse(ENVIRONMENT);

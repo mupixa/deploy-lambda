@@ -35,9 +35,16 @@ jobs:
       - run: echo "GENERATE/FETCH ZIP"
       - uses: mupixa/deploy-lambda
         with:
-          package: TEST-LAMBDA-ZIP.zip
-          function-name: TEST-FUNCTION-NAME
+          ZIP: TEST-LAMBDA-ZIP.zip
+          FUNCTION_NAME: TEST-FUNCTION-NAME
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_SECRET_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          RUNTIME: 'nodejs12.x'
+          HANDLER: 'index.js'
+          DESCRIPTION: 'Test function description'
+          MEMORY_SIZE: '128'
+          TIMEOUT: '5'
+
+
 ```
