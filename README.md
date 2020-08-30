@@ -64,7 +64,7 @@ jobs:
           AWS_SECRET_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           RUNTIME: 'nodejs12.x'
-          HANDLER: 'index.js'
+          HANDLER: 'index.handler'
           DESCRIPTION: 'Test function description'
           MEMORY_SIZE: '128'
           TIMEOUT: '5'
