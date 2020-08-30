@@ -7,6 +7,9 @@ Github Action to update a Lambda function from a ZIP file.
 - `AWS_REGION`
 - `AWS_SECRET_ID`
 - `AWS_SECRET_KEY`
+
+## Optional parameters
+
 - `RUNTIME`
 - `ROLE`
 - `HANDLER`
