@@ -69,5 +69,5 @@ jobs:
           DESCRIPTION: 'Test function description'
           MEMORY_SIZE: '128'
           TIMEOUT: '5'
-          ENVIRONMENT: '{"VAR_NAME":"VAR_VALUE"}'
+          ENVIRONMENT: '{"VAR_NAME":"VAR_VALUE","TEST":"VALUE"}'
 ```
