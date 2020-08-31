@@ -58,7 +58,7 @@ try {
 
   lambda.updateFunctionCode(uploadParams, (err) => {
     if (!!err) {
-      console.error(err);
+      core.error(error.message);
       core.setFailed(err);
     }
   });
@@ -92,11 +92,12 @@ try {
   if (Object.keys(configParams).length > 1) {
     lambda.updateFunctionConfiguration(configParams, (err) => {
       if (!!err) {
-        console.error(err);
+        core.error(error.message);
         core.setFailed(err);
       }
     });
   }
 } catch (error) {
+  core.error(error.message);
   core.setFailed(error.message);
 }
