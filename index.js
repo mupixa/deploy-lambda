@@ -1,4 +1,3 @@
-// const github = require('@actions/github');
 const core = require("@actions/core");
 const fs = require("fs");
 const AWS = require("aws-sdk");
@@ -58,7 +57,7 @@ try {
 
   lambda.updateFunctionCode(uploadParams, (err) => {
     if (!!err) {
-      core.error(error.message);
+      core.error(err.message);
       core.setFailed(err);
     }
   });
@@ -92,7 +91,7 @@ try {
   if (Object.keys(configParams).length > 1) {
     lambda.updateFunctionConfiguration(configParams, (err) => {
       if (!!err) {
-        core.error(error.message);
+        core.error(err.message);
         core.setFailed(err);
       }
     });
