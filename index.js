@@ -2,7 +2,7 @@ const core = require("@actions/core");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 
-try {
+async function run() {
   // Get all parameters
   const ZIP = core.getInput("ZIP");
   const FUNCTION_NAME = core.getInput("FUNCTION_NAME");
@@ -55,12 +55,7 @@ try {
     ZipFile: zipBuffer,
   };
 
-  lambda.updateFunctionCode(uploadParams, (err) => {
-    if (!!err) {
-      core.error(err.message);
-      core.setFailed(err);
-    }
-  });
+  await lambda.updateFunctionCode(uploadParams).promise();
 
   let configParams = {
     FunctionName: FUNCTION_NAME,
@@ -89,14 +84,21 @@ try {
   }
 
   if (Object.keys(configParams).length > 1) {
-    lambda.updateFunctionConfiguration(configParams, (err) => {
-      if (!!err) {
-        core.error(err.message);
-        core.setFailed(err);
-      }
-    });
+    await lambda
+      .waitFor("functionUpdated", {
+        FunctionName: FUNCTION_NAME,
+      })
+      .promise();
+
+    await lambda.updateFunctionConfiguration(configParams).promise();
   }
-} catch (error) {
-  core.error(error.message);
-  core.setFailed(error.message);
 }
+
+(async function () {
+  try {
+    await run();
+  } catch (error) {
+    core.error(error.message);
+    core.setFailed(error.message);
+  }
+})();
