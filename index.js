@@ -51,16 +51,11 @@ async function run() {
 
   const uploadParams = {
     FunctionName: FUNCTION_NAME,
+    Publish: true,
     ZipFile: zipBuffer,
   };
 
-  const data = await lambda.updateFunctionCode(uploadParams).promise();
-  const publishParams = {
-    CodeSha256: data.CodeSha256,
-    Description: `${new Date()}`,
-    FunctionName: FUNCTION_NAME,
-  };
-  await lambda.publishVersion(publishParams).promise();
+  await lambda.updateFunctionCode(uploadParams).promise();
 
   let configParams = {
     FunctionName: FUNCTION_NAME,
@@ -90,7 +85,7 @@ async function run() {
 
   if (Object.keys(configParams).length > 1) {
     await lambda
-      .waitFor("functionUpdated", {
+      .waitFor("functionUpdatedV2", {
         FunctionName: FUNCTION_NAME,
       })
       .promise();
