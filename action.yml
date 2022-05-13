@@ -42,5 +42,5 @@ inputs:
     description: "Optional Lambda configuration property"
     default: ""
 runs:
-  using: "node14"
+  using: "node16"
   main: "index.js"
