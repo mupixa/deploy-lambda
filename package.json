@@ -4,8 +4,8 @@
   "description": "AWS lambda deploy github action",
   "main": "index.js",
   "dependencies": {
-    "aws-sdk": "^2.742.0",
-    "@actions/core": "^1.2.5"
+    "aws-sdk": "^2.1033.0",
+    "@actions/core": "^1.6.0"
   },
   "devDependencies": {},
   "scripts": {},
