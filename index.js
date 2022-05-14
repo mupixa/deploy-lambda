@@ -56,7 +56,7 @@ async function run() {
   };
 
   const updateCodeRes = await lambda.updateFunctionCode(uploadParams).promise();
-  console.log(`Update Response: ${updateCodeRes}`);
+  console.log("Update Response: ", updateCodeRes);
 
   let configParams = {
     FunctionName: FUNCTION_NAME,
@@ -86,7 +86,7 @@ async function run() {
 
   if (Object.keys(configParams).length > 1) {
     await lambda
-      .waitFor("functionUpdated", {
+      .waitFor("functionUpdatedV2", {
         FunctionName: FUNCTION_NAME,
       })
       .promise();
