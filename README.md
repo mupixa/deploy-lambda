@@ -30,6 +30,8 @@ Github Action to update a Lambda function from a ZIP file.
                 "s3:PutObject",
                 "iam:ListRoles",
                 "iam:PassRole",
+                "lambda:GetFunction",
+                "lambda:GetFunctionConfiguration",
                 "lambda:UpdateFunctionCode",
                 "lambda:UpdateFunctionConfiguration"
             ],
