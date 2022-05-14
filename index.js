@@ -55,7 +55,7 @@ async function run() {
     ZipFile: zipBuffer,
   };
 
-  lambda.updateFunctionCode(uploadParams).promise();
+  await lambda.updateFunctionCode(uploadParams).promise();
 
   let configParams = {
     FunctionName: FUNCTION_NAME,
@@ -84,12 +84,6 @@ async function run() {
   }
 
   if (Object.keys(configParams).length > 1) {
-    await lambda
-      .waitFor("functionUpdatedV2", {
-        FunctionName: FUNCTION_NAME,
-      })
-      .promise();
-
     await lambda.updateFunctionConfiguration(configParams).promise();
   }
 }
