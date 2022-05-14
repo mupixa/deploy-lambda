@@ -55,7 +55,8 @@ async function run() {
     ZipFile: zipBuffer,
   };
 
-  await lambda.updateFunctionCode(uploadParams).promise();
+  const updateCodeRes = await lambda.updateFunctionCode(uploadParams).promise();
+  console.log(`Update Response: ${updateCodeRes}`);
 
   let configParams = {
     FunctionName: FUNCTION_NAME,
@@ -84,6 +85,12 @@ async function run() {
   }
 
   if (Object.keys(configParams).length > 1) {
+    await lambda
+      .waitFor("functionUpdated", {
+        FunctionName: FUNCTION_NAME,
+      })
+      .promise();
+
     await lambda.updateFunctionConfiguration(configParams).promise();
   }
 }
@@ -92,6 +99,7 @@ async function run() {
   try {
     await run();
   } catch (error) {
+    console.log(error);
     core.error(error.message);
     core.setFailed(error.message);
   }
