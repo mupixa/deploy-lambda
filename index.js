@@ -10,8 +10,8 @@ async function run() {
   const ZIP = core.getInput("ZIP");
   const FUNCTION_NAME = core.getInput("FUNCTION_NAME");
   const AWS_REGION = core.getInput("AWS_REGION");
-  const AWS_SECRET_KEY = core.getInput("AWS_SECRET_KEY");
   const AWS_SECRET_ID = core.getInput("AWS_SECRET_ID");
+  const AWS_SECRET_KEY = core.getInput("AWS_SECRET_KEY");
   const RUNTIME = core.getInput("RUNTIME");
   const ROLE = core.getInput("ROLE");
   const HANDLER = core.getInput("HANDLER");
@@ -31,11 +31,11 @@ async function run() {
   if (!AWS_REGION) {
     throw "No AWS_REGION provided!";
   }
-  if (!AWS_SECRET_KEY) {
-    throw "No AWS_SECRET_KEY provided!";
-  }
   if (!AWS_SECRET_ID) {
     throw "No AWS_SECRET_ID provided!";
+  }
+  if (!AWS_SECRET_KEY) {
+    throw "No AWS_SECRET_KEY provided!";
   }
   if (!ZIP) {
     throw "No ZIP provided!";
@@ -81,11 +81,15 @@ async function run() {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
   const command = new UpdateFunctionCodeCommand(updateParams);
+  const awsIdentityProvider = () =>
+    Promise.resolve({
+      accessKeyId: AWS_SECRET_ID,
+      secretAccessKey: AWS_SECRET,
+    });
   const client = new LambdaClient({
     apiVersion: "2015-03-31",
     region: AWS_REGION,
-    secretAccessKey: AWS_SECRET_KEY,
-    accessKeyId: AWS_SECRET_ID,
+    credentials: awsIdentityProvider,
     maxRetries: 3,
     sslEnabled: true,
     logger: console,
