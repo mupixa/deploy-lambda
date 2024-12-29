@@ -29859,7 +29859,7 @@ async function run() {
   const awsIdentityProvider = () =>
     Promise.resolve({
       accessKeyId: AWS_SECRET_ID,
-      secretAccessKey: AWS_SECRET,
+      secretAccessKey: AWS_SECRET_KEY,
     });
   const client = new LambdaClient({
     apiVersion: "2015-03-31",
