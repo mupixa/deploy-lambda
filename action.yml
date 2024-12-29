@@ -5,20 +5,29 @@ branding:
   icon: "zap"
   color: "purple"
 inputs:
-  ZIP:
-    description: "Zip package of the complete Lambda source and dependencies."
-    default: ""
-  FUNCTION_NAME:
-    description: "Name of the Lambda function"
-    default: ""
-  AWS_SECRET_KEY:
-    description: "AWS secret key"
+  AWS_REGION:
+    description: "AWS region of the Lambda"
     default: ""
   AWS_SECRET_ID:
     description: "AWS secret key ID"
     default: ""
-  AWS_REGION:
-    description: "AWS region of the Lambda"
+  AWS_SECRET_KEY:
+    description: "AWS secret key"
+    default: ""
+  ZIP:
+    description: "Zip package of the complete Lambda source and dependencies."
+    default: ""
+  S3_BUCKET:
+    description: "Optional Lambda configuration property"
+    default: ""
+  S3_KEY:
+    description: "Optional Lambda configuration property"
+    default: ""
+  S3_OBJECT_VERSION:
+    description: "Optional Lambda configuration property"
+    default: ""
+  FUNCTION_NAME:
+    description: "Name of the Lambda function"
     default: ""
   RUNTIME:
     description: "Optional Lambda configuration property"
@@ -33,6 +42,9 @@ inputs:
     description: "Optional Lambda configuration property"
     default: ""
   MEMORY_SIZE:
+    description: "Optional Lambda configuration property"
+    default: ""
+  ARCHITECTURES:
     description: "Optional Lambda configuration property"
     default: ""
   ENVIRONMENT:
