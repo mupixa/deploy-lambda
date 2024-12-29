@@ -2,11 +2,11 @@ Github Action to update a Lambda function from a ZIP file.
 
 ## Required parameters
 
-- `ZIP`: A ZIP file containing the source of the lambda.
-- `FUNCTION_NAME`
 - `AWS_REGION`
 - `AWS_SECRET_ID`
 - `AWS_SECRET_KEY`
+- `FUNCTION_NAME`
+- `ZIP`: A ZIP file containing the source of the lambda.
 
 ## Optional parameters
 
@@ -18,6 +18,8 @@ Github Action to update a Lambda function from a ZIP file.
 - `MEMORY_SIZE`
 - `ENVIRONMENT`
 - `ARCHITECTURES`: A comma separated list if multiple architectures are to be supported
+- `S3_BUCKET`: The S3 bucket where the ZIP should be uploaded
+- `S3_KEY`: The key that should be used for the ZIP
 
 ## Required permisions for the access key
 

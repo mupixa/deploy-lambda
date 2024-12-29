@@ -4,6 +4,7 @@ const {
   LambdaClient,
   UpdateFunctionCodeCommand,
 } = require("@aws-sdk/client-lambda");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 async function run() {
   // Get all parameters
@@ -22,7 +23,6 @@ async function run() {
   const ENVIRONMENT = core.getInput("ENVIRONMENT");
   const S3_BUCKET = core.getInput("S3_BUCKET");
   const S3_KEY = core.getInput("S3_KEY");
-  const S3_OBJECT_VERSION = core.getInput("S3_OBJECT_VERSION");
 
   // Check mandatory params
   if (!FUNCTION_NAME) {
@@ -40,28 +40,50 @@ async function run() {
   if (!ZIP) {
     throw "No ZIP provided!";
   }
-
+  const awsIdentityProvider = () =>
+    Promise.resolve({
+      accessKeyId: AWS_SECRET_ID,
+      secretAccessKey: AWS_SECRET_KEY,
+    });
+  const awsConfig = {
+    apiVersion: "2015-03-31",
+    region: AWS_REGION,
+    credentials: awsIdentityProvider,
+    maxRetries: 3,
+    sslEnabled: true,
+    logger: console,
+  };
   console.log(`Deploy ${FUNCTION_NAME} from ${ZIP} to ${AWS_REGION}.`);
 
-  const zipBuffer = fs.readFileSync(`./${ZIP}`);
-  core.debug("ZIP read into memory.");
+  const zipBuffer = readZip(`./${ZIP}`);
+  const uploadOverS3 = S3_BUCKET && S3_KEY;
 
   const updateParams = {
     FunctionName: FUNCTION_NAME,
-    ZipFile: zipBuffer,
-    Publish: true,
     PackageType: "Zip",
-    Architectures: ["x86_64"],
+    Publish: true,
   };
-
   const updateParamIfPresent = (paramName, paramValue) => {
-    if (!!paramValue) {
+    if (paramValue) {
       updateParams[paramName] = paramValue;
     }
   };
-  const convertOptionalToNumber = (it) => (!!it ? Number(it) : undefined);
-  const splitOptional = (it, separator = ",") =>
-    !!it ? it.split(separator) : undefined;
+
+  if (uploadOverS3) {
+    updateParams["S3Bucket"] = S3_BUCKET;
+    updateParams["S3Key"] = S3_KEY;
+    const uploadCommand = new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: S3_KEY,
+      Body: zipBuffer,
+    });
+    const s3Client = new S3Client(awsConfig);
+    const response = await s3Client.send(uploadCommand);
+    console.log(response);
+    updateParamIfPresent("S3ObjectVersion", response.VersionId);
+  } else {
+    updateParams["ZipFile"] = zipBuffer;
+  }
 
   // add optional params
   updateParamIfPresent("Runtime", RUNTIME);
@@ -70,31 +92,19 @@ async function run() {
   updateParamIfPresent("Description", DESCRIPTION);
   updateParamIfPresent("Timeout", convertOptionalToNumber(TIMEOUT));
   updateParamIfPresent("MemorySize", convertOptionalToNumber(MEMORY_SIZE));
-  updateParamIfPresent("Architectures", splitOptional(ARCHITECTURES));
-  updateParamIfPresent("S3Bucket", S3_BUCKET);
-  updateParamIfPresent("S3Key", S3_KEY);
-  updateParamIfPresent("S3ObjectVersion", S3_OBJECT_VERSION);
-  if (!!ENVIRONMENT) {
+  updateParamIfPresent(
+    "Architectures",
+    splitOptional(ARCHITECTURES) || ["x86_64"]
+  );
+  if (ENVIRONMENT) {
     const Variables = JSON.parse(ENVIRONMENT);
     updateParams["Environment"] = { Variables };
   }
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
-  const command = new UpdateFunctionCodeCommand(updateParams);
-  const awsIdentityProvider = () =>
-    Promise.resolve({
-      accessKeyId: AWS_SECRET_ID,
-      secretAccessKey: AWS_SECRET_KEY,
-    });
-  const client = new LambdaClient({
-    apiVersion: "2015-03-31",
-    region: AWS_REGION,
-    credentials: awsIdentityProvider,
-    maxRetries: 3,
-    sslEnabled: true,
-    logger: console,
-  });
-  const response = await client.send(command);
+  const updateCommand = new UpdateFunctionCodeCommand(updateParams);
+  const lambdaClient = new LambdaClient(awsConfig);
+  const response = await lambdaClient.send(updateCommand);
   console.log(response);
 }
 
@@ -107,3 +117,19 @@ async function run() {
     core.setFailed(error.message);
   }
 })();
+
+// HELPER FUNCTIONS
+function readZip(path) {
+  const zipBuffer = fs.readFileSync(path);
+  if (zipBuffer) {
+    core.debug("ZIP read into memory.");
+  }
+  return zipBuffer;
+}
+
+function convertOptionalToNumber(it) {
+  return it ? Number(it) : undefined;
+}
+function splitOptional(it, separator = ",") {
+  return it ? it.split(separator) : undefined;
+}

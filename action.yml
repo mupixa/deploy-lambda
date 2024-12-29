@@ -26,9 +26,6 @@ inputs:
   S3_KEY:
     description: "Optional Lambda configuration property"
     default: ""
-  S3_OBJECT_VERSION:
-    description: "Optional Lambda configuration property"
-    default: ""
   RUNTIME:
     description: "Optional Lambda configuration property"
     default: ""
