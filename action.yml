@@ -14,6 +14,9 @@ inputs:
   AWS_SECRET_KEY:
     description: "AWS secret key"
     default: ""
+  FUNCTION_NAME:
+    description: "Name of the Lambda function"
+    default: ""
   ZIP:
     description: "Zip package of the complete Lambda source and dependencies."
     default: ""
@@ -25,9 +28,6 @@ inputs:
     default: ""
   S3_OBJECT_VERSION:
     description: "Optional Lambda configuration property"
-    default: ""
-  FUNCTION_NAME:
-    description: "Name of the Lambda function"
     default: ""
   RUNTIME:
     description: "Optional Lambda configuration property"
