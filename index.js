@@ -1,6 +1,9 @@
 const core = require("@actions/core");
 const fs = require("fs");
-const AWS = require("aws-sdk");
+const {
+  LambdaClient,
+  UpdateFunctionCodeCommand,
+} = require("@aws-sdk/client-lambda");
 
 async function run() {
   // Get all parameters
@@ -15,12 +18,13 @@ async function run() {
   const DESCRIPTION = core.getInput("DESCRIPTION");
   const TIMEOUT = core.getInput("TIMEOUT");
   const MEMORY_SIZE = core.getInput("MEMORY_SIZE");
+  const ARCHITECTURES = core.getInput("ARCHITECTURES");
   const ENVIRONMENT = core.getInput("ENVIRONMENT");
+  const S3_BUCKET = core.getInput("S3_BUCKET");
+  const S3_KEY = core.getInput("S3_KEY");
+  const S3_OBJECT_VERSION = core.getInput("S3_OBJECT_VERSION");
 
-  // Check params
-  if (!ZIP) {
-    throw "No ZIP provided!";
-  }
+  // Check mandatory params
   if (!FUNCTION_NAME) {
     throw "No FUNCTION_NAME provided!";
   }
@@ -33,13 +37,51 @@ async function run() {
   if (!AWS_SECRET_ID) {
     throw "No AWS_SECRET_ID provided!";
   }
+  if (!ZIP) {
+    throw "No ZIP provided!";
+  }
 
-  console.log(`Deploying ${FUNCTION_NAME} from ${ZIP}.`);
+  console.log(`Deploy ${FUNCTION_NAME} from ${ZIP} to ${AWS_REGION}.`);
 
   const zipBuffer = fs.readFileSync(`./${ZIP}`);
   core.debug("ZIP read into memory.");
 
-  const lambda = new AWS.Lambda({
+  const updateParams = {
+    FunctionName: FUNCTION_NAME,
+    ZipFile: zipBuffer,
+    Publish: true,
+    PackageType: "Zip",
+    Architectures: ["x86_64"],
+  };
+
+  const updateParamIfPresent = (paramName, paramValue) => {
+    if (!!paramValue) {
+      updateParams[paramName] = paramValue;
+    }
+  };
+  const convertOptionalToNumber = (it) => (!!it ? Number(it) : undefined);
+  const splitOptional = (it, separator = ",") =>
+    !!it ? it.split(separator) : undefined;
+
+  // add optional params
+  updateParamIfPresent("Runtime", RUNTIME);
+  updateParamIfPresent("Role", ROLE);
+  updateParamIfPresent("Handler", HANDLER);
+  updateParamIfPresent("Description", DESCRIPTION);
+  updateParamIfPresent("Timeout", convertOptionalToNumber(TIMEOUT));
+  updateParamIfPresent("MemorySize", convertOptionalToNumber(MEMORY_SIZE));
+  updateParamIfPresent("Architectures", splitOptional(ARCHITECTURES));
+  updateParamIfPresent("S3Bucket", S3_BUCKET);
+  updateParamIfPresent("S3Key", S3_KEY);
+  updateParamIfPresent("S3ObjectVersion", S3_OBJECT_VERSION);
+  if (!!ENVIRONMENT) {
+    const Variables = JSON.parse(ENVIRONMENT);
+    updateParams["Environment"] = { Variables };
+  }
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
+  const command = new UpdateFunctionCodeCommand(updateParams);
+  const client = new LambdaClient({
     apiVersion: "2015-03-31",
     region: AWS_REGION,
     secretAccessKey: AWS_SECRET_KEY,
@@ -48,51 +90,8 @@ async function run() {
     sslEnabled: true,
     logger: console,
   });
-
-  const uploadParams = {
-    FunctionName: FUNCTION_NAME,
-    Publish: true,
-    ZipFile: zipBuffer,
-  };
-
-  const updateCodeRes = await lambda.updateFunctionCode(uploadParams).promise();
-  console.log("Update Response: ", updateCodeRes);
-
-  let configParams = {
-    FunctionName: FUNCTION_NAME,
-  };
-  if (!!RUNTIME) {
-    configParams["Runtime"] = RUNTIME;
-  }
-  if (!!ROLE) {
-    configParams["Role"] = ROLE;
-  }
-  if (!!HANDLER) {
-    configParams["Handler"] = HANDLER;
-  }
-  if (!!DESCRIPTION) {
-    configParams["Description"] = DESCRIPTION;
-  }
-  if (!!TIMEOUT) {
-    configParams["Timeout"] = Number(TIMEOUT);
-  }
-  if (!!MEMORY_SIZE) {
-    configParams["MemorySize"] = Number(MEMORY_SIZE);
-  }
-  if (!!ENVIRONMENT) {
-    const Variables = JSON.parse(ENVIRONMENT);
-    configParams["Environment"] = { Variables };
-  }
-
-  if (Object.keys(configParams).length > 1) {
-    await lambda
-      .waitFor("functionUpdatedV2", {
-        FunctionName: FUNCTION_NAME,
-      })
-      .promise();
-
-    await lambda.updateFunctionConfiguration(configParams).promise();
-  }
+  const response = await client.send(command);
+  console.log(response);
 }
 
 (async function () {

@@ -17,6 +17,7 @@ Github Action to update a Lambda function from a ZIP file.
 - `TIMEOUT`
 - `MEMORY_SIZE`
 - `ENVIRONMENT`
+- `ARCHITECTURES`: A comma separated list if multiple architectures are to be supported
 
 ## Required permisions for the access key
 
@@ -50,15 +51,15 @@ on:
   pull_request:
     types: [merged]
       branches:
-        - master
+        - main
 
 jobs:
   deploy-lambda:
     if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - run: echo "GENERATE/FETCH ZIP"
+      - uses: actions/checkout@main
+      - run: echo "TODO GENERATE/FETCH ZIP"
       - uses: mupixa/deploy-lambda
         with:
           ZIP: TEST-LAMBDA-ZIP.zip
@@ -68,8 +69,9 @@ jobs:
           AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
           RUNTIME: 'nodejs12.x'
           HANDLER: 'index.handler'
-          DESCRIPTION: 'Test function description'
+          DESCRIPTION: 'Example function description'
           MEMORY_SIZE: '128'
           TIMEOUT: '5'
-          ENVIRONMENT: '{"VAR_NAME":"VAR_VALUE","TEST":"VALUE"}'
+          ARCHITECTURES: 'x86-64'
+          ENVIRONMENT: '{"VAR_NAME":"VAR_VALUE","EXAMPLE_NAME":"EXAMPLE_VALUE"}'
 ```
