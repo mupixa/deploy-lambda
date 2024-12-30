@@ -70,6 +70,7 @@ async function run() {
   };
 
   if (uploadOverS3) {
+    console.log(`Upload to  ${S3_BUCKET} as ${S3_KEY}.`);
     updateParams["S3Bucket"] = S3_BUCKET;
     updateParams["S3Key"] = S3_KEY;
     const uploadCommand = new PutObjectCommand({
@@ -82,6 +83,7 @@ async function run() {
     console.log(response);
     updateParamIfPresent("S3ObjectVersion", response.VersionId);
   } else {
+    console.log(`Direct upload..`);
     updateParams["ZipFile"] = zipBuffer;
   }
 
