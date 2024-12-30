@@ -1,6 +1,6 @@
-name: "Update source and configuration of AWS Lambda function"
-description: "Update a Lambda function from a ZIP file"
-author: "Vladimir Daskalov"
+name: "Deploy AWS Lambda Function"
+description: "Update source code and configuration of an AWS Lambda function"
+author: "vdas"
 branding:
   icon: "zap"
   color: "purple"
