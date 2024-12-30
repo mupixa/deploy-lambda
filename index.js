@@ -83,7 +83,7 @@ async function run() {
     console.log(response);
     updateParamIfPresent("S3ObjectVersion", response.VersionId);
   } else {
-    console.log(`Direct upload..`);
+    console.log(`Direct upload.`);
     updateParams["ZipFile"] = zipBuffer;
   }
 
