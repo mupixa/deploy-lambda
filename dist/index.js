@@ -43619,6 +43619,7 @@ const fs = __nccwpck_require__(7147);
 const {
   LambdaClient,
   UpdateFunctionCodeCommand,
+  UpdateFunctionConfigurationCommand,
 } = __nccwpck_require__(6584);
 const { S3Client, PutObjectCommand } = __nccwpck_require__(9250);
 
@@ -43653,9 +43654,6 @@ async function run() {
   if (!AWS_SECRET_KEY) {
     throw "No AWS_SECRET_KEY provided!";
   }
-  if (!ZIP) {
-    throw "No ZIP provided!";
-  }
   const awsIdentityProvider = () =>
     Promise.resolve({
       accessKeyId: AWS_SECRET_ID,
@@ -43669,14 +43667,10 @@ async function run() {
     sslEnabled: true,
     logger: console,
   };
-  console.log(`Deploy ${FUNCTION_NAME} from ${ZIP} to ${AWS_REGION}.`);
-
-  const zipBuffer = readZip(`./${ZIP}`);
-  const uploadOverS3 = S3_BUCKET && S3_KEY;
+  console.log(`Update ${FUNCTION_NAME} in ${AWS_REGION}.`);
 
   const updateParams = {
     FunctionName: FUNCTION_NAME,
-    PackageType: "Zip",
     Publish: true,
   };
   const updateParamIfPresent = (paramName, paramValue) => {
@@ -43685,22 +43679,27 @@ async function run() {
     }
   };
 
-  if (uploadOverS3) {
-    console.log(`Upload to  ${S3_BUCKET} as ${S3_KEY}.`);
-    updateParams["S3Bucket"] = S3_BUCKET;
-    updateParams["S3Key"] = S3_KEY;
-    const uploadCommand = new PutObjectCommand({
-      Bucket: S3_BUCKET,
-      Key: S3_KEY,
-      Body: zipBuffer,
-    });
-    const s3Client = new S3Client(awsConfig);
-    const response = await s3Client.send(uploadCommand);
-    console.log(response);
-    updateParamIfPresent("S3ObjectVersion", response.VersionId);
-  } else {
-    console.log(`Direct upload.`);
-    updateParams["ZipFile"] = zipBuffer;
+  if (ZIP) {
+    updateParams["PackageType"] = "Zip";
+    const zipBuffer = readZip(`./${ZIP}`);
+    const uploadOverS3 = S3_BUCKET && S3_KEY;
+    if (uploadOverS3) {
+      console.log(`Upload to  ${S3_BUCKET} as ${S3_KEY}.`);
+      updateParams["S3Bucket"] = S3_BUCKET;
+      updateParams["S3Key"] = S3_KEY;
+      const uploadCommand = new PutObjectCommand({
+        Bucket: S3_BUCKET,
+        Key: S3_KEY,
+        Body: zipBuffer,
+      });
+      const s3Client = new S3Client(awsConfig);
+      const response = await s3Client.send(uploadCommand);
+      console.log(response);
+      updateParamIfPresent("S3ObjectVersion", response.VersionId);
+    } else {
+      console.log(`Direct upload.`);
+      updateParams["ZipFile"] = zipBuffer;
+    }
   }
 
   // add optional params
@@ -43720,7 +43719,9 @@ async function run() {
   }
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
-  const updateCommand = new UpdateFunctionCodeCommand(updateParams);
+  const updateCommand = ZIP
+    ? new UpdateFunctionCodeCommand(updateParams)
+    : new UpdateFunctionConfigurationCommand(updateParams);
   const lambdaClient = new LambdaClient(awsConfig);
   const response = await lambdaClient.send(updateCommand);
   console.log(response);

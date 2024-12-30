@@ -6,10 +6,10 @@ Github Action to update a Lambda function from a ZIP file.
 - `AWS_SECRET_ID`
 - `AWS_SECRET_KEY`
 - `FUNCTION_NAME`
-- `ZIP`: A ZIP file containing the source of the lambda.
 
 ## Optional parameters
 
+- `ZIP`: A ZIP file containing the source of the lambda.
 - `RUNTIME`
 - `ROLE`
 - `HANDLER`
