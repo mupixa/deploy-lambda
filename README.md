@@ -10,6 +10,7 @@ Github Action to update a Lambda function from a ZIP file.
 ## Optional parameters
 
 - `ZIP`: A ZIP file containing the source of the lambda.
+- `IMAGE_URI`
 - `RUNTIME`
 - `ROLE`
 - `HANDLER`

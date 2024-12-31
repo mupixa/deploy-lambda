@@ -20,6 +20,9 @@ inputs:
   ZIP:
     description: "Zip package of the complete Lambda source and dependencies."
     default: ""
+  IMAGE_URI:
+    description: "Optional Lambda configuration property"
+    default: ""
   S3_BUCKET:
     description: "Optional Lambda configuration property"
     default: ""

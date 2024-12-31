@@ -24,6 +24,7 @@ async function run() {
   const ENVIRONMENT = core.getInput("ENVIRONMENT");
   const S3_BUCKET = core.getInput("S3_BUCKET");
   const S3_KEY = core.getInput("S3_KEY");
+  const IMAGE_URI = core.getInput("IMAGE_URI");
 
   // Check mandatory params
   if (!FUNCTION_NAME) {
@@ -85,6 +86,10 @@ async function run() {
       updateParams["ZipFile"] = zipBuffer;
     }
   }
+  if (IMAGE_URI) {
+    updateParams["PackageType"] = "Image";
+    updateParams["ImageUri"] = IMAGE_URI;
+  }
 
   // add optional params
   updateParamIfPresent("Runtime", RUNTIME);
@@ -103,9 +108,10 @@ async function run() {
   }
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
-  const updateCommand = ZIP
-    ? new UpdateFunctionCodeCommand(updateParams)
-    : new UpdateFunctionConfigurationCommand(updateParams);
+  const updateCommand =
+    ZIP || IMAGE_URI
+      ? new UpdateFunctionCodeCommand(updateParams)
+      : new UpdateFunctionConfigurationCommand(updateParams);
   const lambdaClient = new LambdaClient(awsConfig);
   const response = await lambdaClient.send(updateCommand);
   console.log(response);
