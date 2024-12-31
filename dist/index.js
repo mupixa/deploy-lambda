@@ -43705,12 +43705,17 @@ async function run() {
   if (IMAGE_URI) {
     updateParams["PackageType"] = "Image";
     updateParams["ImageUri"] = IMAGE_URI;
+  } else {
+    updateParamIfPresent("Runtime", RUNTIME);
+    updateParamIfPresent("Handler", HANDLER);
+    if (ENVIRONMENT) {
+      const Variables = JSON.parse(ENVIRONMENT);
+      updateParams["Environment"] = { Variables };
+    }
   }
 
   // add optional params
-  updateParamIfPresent("Runtime", RUNTIME);
   updateParamIfPresent("Role", ROLE);
-  updateParamIfPresent("Handler", HANDLER);
   updateParamIfPresent("Description", DESCRIPTION);
   updateParamIfPresent("Timeout", convertOptionalToNumber(TIMEOUT));
   updateParamIfPresent("MemorySize", convertOptionalToNumber(MEMORY_SIZE));
@@ -43718,15 +43723,12 @@ async function run() {
     "Architectures",
     splitOptional(ARCHITECTURES) || ["x86_64"]
   );
-  if (ENVIRONMENT) {
-    const Variables = JSON.parse(ENVIRONMENT);
-    updateParams["Environment"] = { Variables };
-  }
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
-  const updateCommand = ZIP
-    ? new UpdateFunctionCodeCommand(updateParams)
-    : new UpdateFunctionConfigurationCommand(updateParams);
+  const updateCommand =
+    ZIP || IMAGE_URI
+      ? new UpdateFunctionCodeCommand(updateParams)
+      : new UpdateFunctionConfigurationCommand(updateParams);
   const lambdaClient = new LambdaClient(awsConfig);
   const response = await lambdaClient.send(updateCommand);
   console.log(response);
