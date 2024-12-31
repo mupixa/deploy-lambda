@@ -43724,10 +43724,9 @@ async function run() {
   }
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/lambda/command/UpdateFunctionCodeCommand/
-  const updateCommand =
-    ZIP || IMAGE_URI
-      ? new UpdateFunctionCodeCommand(updateParams)
-      : new UpdateFunctionConfigurationCommand(updateParams);
+  const updateCommand = ZIP
+    ? new UpdateFunctionCodeCommand(updateParams)
+    : new UpdateFunctionConfigurationCommand(updateParams);
   const lambdaClient = new LambdaClient(awsConfig);
   const response = await lambdaClient.send(updateCommand);
   console.log(response);
